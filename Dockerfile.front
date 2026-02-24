@@ -1,0 +1,32 @@
+FROM node:20-alpine AS builder
+
+WORKDIR /app
+
+COPY package.json .
+
+RUN npm install
+
+COPY index.html .
+COPY public/ .
+
+WORKDIR /app/src
+
+COPY src/App.jsx .
+COPY src/main.jsx .
+COPY src/App.css .
+COPY src/index.css .
+
+RUN npm run build
+
+FROM builder AS runner
+
+RUN addgroup --system --gid 1001 group
+RUN adduser --system --uid 1001 user
+
+WORKDIR /app
+
+COPY --from=builder --chown=user:group /app/dist .
+
+USER user
+
+CMD ["npm", "run", "preview"]

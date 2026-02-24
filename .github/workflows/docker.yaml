@@ -1,0 +1,23 @@
+name: Deployer dans une environnement conteneurisé
+
+on:
+  push:
+    branches:
+    - main
+
+jobs:
+  build-and-push-docker-containers:
+    runs-on: ubuntu-24.04
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+    - name: build front docker image
+      run: docker build -t my-app-front -f Dockerfile.front .
+    - name: build back docker image
+      run: docker build -t my-app-back -f Dockerfile.back .
+    - name: login to GitHub
+      run: docker login ghcr.io -u ${{ github.actor }} -p ${{ secrets.GITHUB_TOKEN }}
+    - name: push front docker image
+      run: docker push my-app-front
+    - name: push back docker image
+      run: docker push my-app-back
