@@ -1,5 +1,5 @@
 servers:
   hosts:
     http:
-      ansible_host: 127.0.0.1
+      ansible_host: 141.94.34.48
       http_port: 80
