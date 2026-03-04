@@ -3,3 +3,4 @@ servers:
     http:
       ansible_host: 141.94.34.48
       http_port: 80
+      ansible_user: ubuntu

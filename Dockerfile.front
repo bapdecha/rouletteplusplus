@@ -1,32 +1,46 @@
-FROM node:20-alpine AS builder
+# --- Étape 1 : Build ---
+    FROM node:20-alpine AS builder
 
-WORKDIR /app
+    WORKDIR /app
+    
+    # 1. Dépendances (Le plus lourd, on le fait en premier)
+    COPY package.json .
+    RUN npm install
+    
+    # 2. Fichiers de configuration (INDISPENSABLE pour le build)
+    # Sans vite.config.js, le build ne transformera pas vos imports JS
+    COPY vite.config.js . 
+    COPY index.html .
+    
+    # 3. Copie sélective des dossiers
+    # En copiant le DOSSIER entier, on préserve la structure /src/main.jsx
+    COPY src/main.jsx ./src/main.jsx
+    COPY src/App.jsx ./src/App.jsx
+    COPY src/App.css ./src/App.css
+    COPY src/index.css ./src/index.css
+    COPY public/ ./public/
 
-COPY package.json .
+    # On génère le dossier /dist
+    RUN npm run build
 
-RUN npm install
-
-COPY index.html .
-COPY public/ .
-
-WORKDIR /app/src
-
-COPY src/App.jsx .
-COPY src/main.jsx .
-COPY src/App.css .
-COPY src/index.css .
-
-RUN npm run build
-
-FROM builder AS runner
-
-RUN addgroup --system --gid 1001 group
-RUN adduser --system --uid 1001 user
-
-WORKDIR /app
-
-COPY --from=builder --chown=user:group /app/dist .
-
-USER user
-
-CMD ["npm", "run", "preview"]
+    # --- Étape 2 : Runtime ---
+    FROM builder AS runner
+    
+    WORKDIR /app
+    
+    # On crée l'utilisateur sécurité
+    RUN addgroup --system --gid 1001 group && \
+        adduser --system --uid 1001 user
+    
+    # CRUCIAL : On a besoin de package.json et node_modules pour "npm run preview"
+    COPY --from=builder /app/package.json ./
+    COPY --from=builder /app/node_modules ./node_modules
+    COPY --from=builder /app/dist ./dist
+    
+    # On s'assure que les droits sont corrects
+    RUN chown -R user:group /app
+    
+    USER user
+    
+    # Rappel : assurez-vous que le script "preview" dans package.json inclut "--host 0.0.0.0"
+    CMD ["npm", "run", "preview"]

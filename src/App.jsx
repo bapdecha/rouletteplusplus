@@ -216,7 +216,7 @@ function App() {
       try {
           const query1 = mises.map(mise => mise.split("/")[0]).join(",");
           const query2 = mises.map(mise => mise.split("/")[1]).join(",");
-          const response = await fetch(`http://localhost:8080/generate?cases=${query1}&mises=${query2}`, {
+          const response = await fetch(`http://141.94.34.48:8080/generate?cases=${query1}&mises=${query2}`, {
             method: "GET",
           });
           let json;

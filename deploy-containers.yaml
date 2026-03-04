@@ -1,32 +1,30 @@
 ---
 
 - name: deploy docker containers
-  become: true
+  become: yes
   hosts: servers
   roles:
     - role: geerlingguy.docker
-  vars:
-    docker_user: {{ ansible_user }}
   vars_files:
     - secrets/secrets.yaml
 
   tasks:
     - name: pull docker images
       community.docker.docker_login:
-        registry_url: "ghcr.io"
+        registry_url: "docker.io"
         username: "bapdecha"
-        password: {{ github_token }}
+        password: "{{ docker_token }}"
     - name: run docker front containers
       community.docker.docker_container:
         name: my-app-front
-        image: ghcr.io/my-app-front
+        image: bapdecha/baprep:front
         ports:
           - 80:4173
         state: started
     - name: run docker back containers
       community.docker.docker_container:
         name: my-app-back
-        image: ghcr.io/my-app-back
+        image: bapdecha/baprep:back
         ports:
           - 8080:8080
         state: started

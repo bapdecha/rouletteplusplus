@@ -12,12 +12,16 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v4
     - name: build front docker image
-      run: docker build -t my-app-front -f Dockerfile.front .
+      run: docker build --platform linux/amd64 -t my-app-front -f Dockerfile.front .
     - name: build back docker image
-      run: docker build -t my-app-back -f Dockerfile.back .
+      run: docker build --platform linux/amd64 -t my-app-back -f Dockerfile.back .
     - name: login to GitHub
-      run: docker login ghcr.io -u ${{ github.actor }} -p ${{ secrets.GITHUB_TOKEN }}
+      run: docker login docker.io -u ${{ github.actor }} -p ${{ secrets.TOKEN }}
+    - name: tag images
+      run: docker tag my-app-front docker.io/bapdecha/baprep:front
+    - name: tag back image
+      run: docker tag my-app-back docker.io/bapdecha/baprep:back
     - name: push front docker image
-      run: docker push my-app-front
+      run: docker push bapdecha/baprep:front
     - name: push back docker image
-      run: docker push my-app-back
+      run: docker push bapdecha/baprep:back

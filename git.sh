@@ -11,7 +11,7 @@ elif [[ $# -eq 1 ]]; then
     elif [[ $1 = '--deploy' ]]; then
         terraform plan
         terraform apply
-        ansible-playbook -i inventory/hosts.yaml playbook.yaml
+        ansible-playbook -i inventory/hosts.yaml deploy-containers.yaml --ask-vault-password
     else
         printf "%s\n" "Invalid option"
     fi
