@@ -130,6 +130,7 @@ function App() {
             setIsBet(prev => prev.map(isBet => false));
             setIsBet2(prev => prev.map(isBet2 => false));
             setIsBet3(prev => prev.map(isBet3 => false));
+            alert("Resultat : "+nbres+", Gain : "+gain+", Jetons : "+(jetons+gain));
           }
       };
       function ralentir() {

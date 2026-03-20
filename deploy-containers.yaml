@@ -21,6 +21,8 @@
         ports:
           - 80:4173
         state: started
+        recreate: true
+        restart_policy: always
     - name: run docker back containers
       community.docker.docker_container:
         name: my-app-back
@@ -28,3 +30,5 @@
         ports:
           - 8080:8080
         state: started
+        recreate: true
+        restart_policy: always
